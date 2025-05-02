@@ -14,10 +14,10 @@ public class AppUI extends Application {
     // Constants for default calorie and macro values
     // These values can be adjusted based on user input or preferences (if I end up
     // implementing that)
-    private final int DEFUALTCALORIES = 2000;
-    private final int DEFAULTPROTEIN = 140; // in grams
-    private final int DEFAULTCARBS = 120; // in grams
-    private final int DEFAULTFAT = 90; // in grams
+    private int calories = 2000;
+    private int protein = 140; // in grams
+    private int carbs = 120; // in grams
+    private int fat = 90; // in grams
 
     @Override
     public void start(Stage primaryStage) {
@@ -27,6 +27,9 @@ public class AppUI extends Application {
 
         // Set up the scene and stage
         Scene scene = new Scene(rootLayout, 400, 300);
+        // scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        // WANTED TO DO SOME CSS STUFF BUT ITS NOT WORKING
+        primaryStage.setResizable(false); // Disable resizing
         primaryStage.setTitle("Calorie Tracker");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -67,10 +70,10 @@ public class AppUI extends Application {
 
     private void showCalorieView(Stage primaryStage) {
         // Create labels to display calorie and macro information
-        Label calorieLabel = new Label("Remaining Calories: " + DEFUALTCALORIES);
-        Label proteinLabel = new Label("Protein: " + DEFAULTPROTEIN + "g");
-        Label carbsLabel = new Label("Carbs: " + DEFAULTCARBS + "g");
-        Label fatLabel = new Label("Fat: " + DEFAULTFAT + "g");
+        Label calorieLabel = new Label("Remaining Calories: " + getCalories());
+        Label proteinLabel = new Label("Protein: " + getProtein() + "g");
+        Label carbsLabel = new Label("Carbs: " + getCarbs() + "g");
+        Label fatLabel = new Label("Fat: " + getFat() + "g");
 
         // Style the labels
         calorieLabel.setStyle("-fx-font-size: 16px; -fx-padding: 5;");
@@ -94,6 +97,40 @@ public class AppUI extends Application {
         // Set up the scene and switch to it
         Scene calorieScene = new Scene(calorieLayout, 400, 300);
         primaryStage.setScene(calorieScene);
+    }
+
+    // Getter methods for default values
+    public int getCalories() {
+        return calories;
+    }
+
+    public int getProtein() {
+        return protein;
+    }
+
+    public int getCarbs() {
+        return carbs;
+    }
+
+    public int getFat() {
+        return fat;
+    }
+
+    // Setter methods for default values
+    public void setCalories(int calories, int num) {
+        this.calories += num;
+    }
+
+    public void setProtein(int protein, int num) {
+        this.protein += num;
+    }
+
+    public void setCarbs(int carbs, int num) {
+        this.carbs += num;
+    }
+
+    public void setFat(int fat, int num) {
+        this.fat += num;
     }
 
     public static void main(String[] args) {
