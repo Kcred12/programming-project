@@ -1,4 +1,5 @@
 com\example\AppUI.class
 com\example\FileIO.class
 com\example\Recipie.class
+com\example\FoodItem.class
 com\example\RecipieController.class

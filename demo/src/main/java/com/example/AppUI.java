@@ -1,5 +1,8 @@
 package com.example;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,16 +22,28 @@ public class AppUI extends Application {
     private int carbs = 120; // in grams
     private int fat = 90; // in grams
 
+    // Some constant food items for ease of use
+    private final FoodItem chickenBreast = new FoodItem("Chicken Breast", 165, 31, 0, 3.6);
+    private final FoodItem potatoes = new FoodItem("Potatoes", 93, 2.5, 21, 0);
+    private final FoodItem whiteRice = new FoodItem("White Rice", 130, 2.7, 28, 0);
+    private final FoodItem eightyTwentyGroundBeef = new FoodItem("80/20 Ground Beef", 270, 26, 0, 18);
+
+    ArrayList<FoodItem> FOOD_CONSTANTS = new ArrayList<FoodItem>();
+
     @Override
     public void start(Stage primaryStage) {
+
+        // Initialize the food constants
+        FOOD_CONSTANTS.add(chickenBreast);
+        FOOD_CONSTANTS.add(potatoes);
+        FOOD_CONSTANTS.add(whiteRice);
+        FOOD_CONSTANTS.add(eightyTwentyGroundBeef);
 
         // Use a BorderPane to position the title at the top and the menu in the center
         BorderPane rootLayout = setupUI(primaryStage);
 
         // Set up the scene and stage
         Scene scene = new Scene(rootLayout, 400, 300);
-        // scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-        // WANTED TO DO SOME CSS STUFF BUT ITS NOT WORKING
         primaryStage.setResizable(false); // Disable resizing
         primaryStage.setTitle("Calorie Tracker");
         primaryStage.setScene(scene);
@@ -52,7 +67,7 @@ public class AppUI extends Application {
 
         // Set up button actions (to be implemented later)
         viewCaloriesButton.setOnAction(e -> showCalorieView(primaryStage));
-        addFoodButton.setOnAction(e -> System.out.println("Add Food/Recipes clicked"));
+        addFoodButton.setOnAction(e -> showAddFoodOptions(primaryStage));
         createRecipeButton.setOnAction(e -> System.out.println("Create Recipes clicked"));
         viewRecipesButton.setOnAction(e -> System.out.println("View Recipes clicked"));
 
@@ -66,6 +81,79 @@ public class AppUI extends Application {
         rootLayout.setCenter(menuLayout);
 
         return rootLayout;
+    }
+
+    private void showAddFoodOptions(Stage primaryStage) {
+        // Create buttons for the options
+        Button addRecipeButton = new Button("Add Recipe");
+        Button addFoodButton = new Button("Add Food");
+
+        // Create a back button to return to the main menu
+        Button backButton = new Button("Back");
+
+        // Set up actions for the buttons
+        addRecipeButton.setOnAction(e -> System.out.println("Add Recipe functionality to be implemented."));
+        addFoodButton.setOnAction(e -> showFoodList(primaryStage));
+
+        backButton.setOnAction(e -> {
+            BorderPane rootLayout = setupUI(primaryStage);
+            Scene scene = new Scene(rootLayout, 400, 300);
+            primaryStage.setScene(scene);
+        });
+
+        // Arrange buttons in a vertical layout
+        VBox optionsLayout = new VBox(10, addRecipeButton, addFoodButton, backButton);
+        optionsLayout.setAlignment(Pos.CENTER);
+
+        // Set up the scene and switch to it
+        Scene optionsScene = new Scene(optionsLayout, 400, 300);
+        primaryStage.setScene(optionsScene);
+
+    }
+
+    private void showFoodList(Stage primaryStage) {
+        // Create a label for the title
+        Label titleLabel = new Label("Available Foods");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white; -fx-padding: 10;");
+
+        // Create a VBox to display the list of food items
+        VBox foodListLayout = new VBox(10, titleLabel);
+        foodListLayout.setAlignment(Pos.CENTER);
+        foodListLayout.setStyle("-fx-padding: 20; -fx-background-color: black;");
+
+        // Add each food item as a button
+        for (FoodItem food : FOOD_CONSTANTS) {
+            Button foodButton = new Button(food.getName());
+            foodButton.setStyle("-fx-text-fill: white; -fx-background-color: #444;");
+            foodButton.setOnAction(e -> {
+                FoodItem selectedFood = food;
+                addFoodToTracker(selectedFood);
+                System.out.println(food.getName() + " added to tracker.");
+            });
+            foodListLayout.getChildren().add(foodButton);
+        }
+
+        // Add a back button to return to the previous menu
+        Button backButton = new Button("Back");
+        backButton.setStyle("-fx-text-fill: white; -fx-background-color: #444;");
+        backButton.setOnAction(e -> showAddFoodOptions(primaryStage));
+        foodListLayout.getChildren().add(backButton);
+
+        // Set up the scene and switch to it
+        Scene foodListScene = new Scene(foodListLayout, 400, 300);
+        primaryStage.setScene(foodListScene);
+    }
+
+    private void addFoodToTracker(FoodItem food) {
+        if (food != null) {
+            calories -= food.getCalories();
+            protein -= food.getProtein();
+            carbs -= food.getCarbs();
+            fat -= food.getFat();
+            System.out.println(food.getName() + " added: " + food);
+        } else {
+            System.out.println("Food not found.");
+        }
     }
 
     private void showCalorieView(Stage primaryStage) {
