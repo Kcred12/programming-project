@@ -1,32 +1,18 @@
 package com.example;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Recipie {
     private String name;
-    private int totalCalories;
-    private int totalProtein;
-    private int totalCarbs;
-    private int totalFat;
-    private List<FoodItem> ingredients;
+    private double totalCalories;
+    private double totalProtein;
+    private double totalCarbs;
+    private double totalFat;
 
-    public Recipie(String name) {
+    public Recipie(String name, double totalCalories, double totalProtein, double totalCarbs, double totalFat) {
         this.name = name;
-        this.totalCalories = 0;
-        this.totalProtein = 0;
-        this.totalCarbs = 0;
-        this.totalFat = 0;
-        this.ingredients = new ArrayList<>();
-    }
-
-    // Add a food item to the recipe
-    public void addIngredient(FoodItem food) {
-        ingredients.add(food);
-        totalCalories += food.getCalories();
-        totalProtein += food.getProtein();
-        totalCarbs += food.getCarbs();
-        totalFat += food.getFat();
+        this.totalCalories = totalCalories;
+        this.totalProtein = totalProtein;
+        this.totalCarbs = totalCarbs;
+        this.totalFat = totalFat;
     }
 
     // Getters
@@ -34,24 +20,45 @@ public class Recipie {
         return name;
     }
 
-    public int getTotalCalories() {
+    public double getTotalCalories() {
         return totalCalories;
     }
 
-    public int getTotalProtein() {
+    public double getTotalProtein() {
         return totalProtein;
     }
 
-    public int getTotalCarbs() {
+    public double getTotalCarbs() {
         return totalCarbs;
     }
 
-    public int getTotalFat() {
+    public double getTotalFat() {
         return totalFat;
     }
 
-    public List<FoodItem> getIngredients() {
-        return ingredients;
+    // Setters
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTotalCalories(double totalCalories) {
+        this.totalCalories = totalCalories;
+    }
+
+    public void setTotalProtein(double totalProtein) {
+        this.totalProtein = totalProtein;
+    }
+
+    public void setTotalCarbs(double totalCarbs) {
+        this.totalCarbs = totalCarbs;
+    }
+
+    public void setTotalFat(double totalFat) {
+        this.totalFat = totalFat;
+    }
+
+    public String toCSV() {
+        return name + "," + totalCalories + "," + totalProtein + "," + totalCarbs + "," + totalFat;
     }
 
     @Override
@@ -62,9 +69,6 @@ public class Recipie {
         result += "Total Carbs: " + totalCarbs + "g\n";
         result += "Total Fat: " + totalFat + "g\n";
         result += "Ingredients:\n";
-        for (FoodItem food : ingredients) {
-            result += " - " + food.toString() + "\n";
-        }
         return result;
     }
 }

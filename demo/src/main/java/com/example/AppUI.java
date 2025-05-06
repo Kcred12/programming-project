@@ -1,5 +1,8 @@
 package com.example;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javafx.application.Application;
@@ -70,7 +73,7 @@ public class AppUI extends Application {
         // Set up button actions (to be implemented later)
         viewCaloriesButton.setOnAction(e -> showCalorieView(primaryStage));
         addFoodButton.setOnAction(e -> showAddFoodOptions(primaryStage));
-        createRecipeButton.setOnAction(e -> System.out.println("Create Recipes clicked"));
+        createRecipeButton.setOnAction(e -> showCreateRecipe(primaryStage));
         viewRecipesButton.setOnAction(e -> System.out.println("View Recipes clicked"));
 
         // Arrange buttons in a vertical layout
@@ -83,6 +86,80 @@ public class AppUI extends Application {
         rootLayout.setCenter(menuLayout);
 
         return rootLayout;
+    }
+
+    // Displays the create recipe UI
+    private void showCreateRecipe(Stage primaryStage) {
+        // Create UI components
+        Label titleLabel = new Label("Create a New Recipe");
+        Label recipieNameLabel = new Label("Recipe Name:");
+        TextField recipeNameInput = new TextField();
+        Label caloriesLabel = new Label("Total Calories:");
+        TextField caloriesInput = new TextField();
+        Label proteinLabel = new Label("Total Protein (g):");
+        TextField proteinInput = new TextField();
+        Label carbsLabel = new Label("Total Carbs (g):");
+        TextField carbsInput = new TextField();
+        Label fatLabel = new Label("Total Fat (g):");
+        TextField fatInput = new TextField();
+        Button saveRecipeButton = new Button("Save Recipe");
+        Button backButton = new Button("Back");
+
+        // Save the recipe
+        saveRecipeButton.setOnAction(e -> {
+            String name = recipeNameInput.getText();
+            double totalCalories = Double.parseDouble(caloriesInput.getText());
+            double totalProtein = Double.parseDouble(proteinInput.getText());
+            double totalCarbs = Double.parseDouble(carbsInput.getText());
+            double totalFat = Double.parseDouble(fatInput.getText());
+
+            Recipie newRecipe = new Recipie(name, totalCalories, totalProtein, totalCarbs, totalFat);
+            System.out.println("Recipe saved: " + newRecipe);
+        });
+
+        // Back button to return to the main menu
+        backButton.setOnAction(e -> {
+            BorderPane rootLayout = setupUI(primaryStage);
+            Scene scene = new Scene(rootLayout, 400, 300);
+            primaryStage.setScene(scene);
+        });
+
+        // Save button action
+        saveRecipeButton.setOnAction(e -> {
+            String name = recipeNameInput.getText();
+            double totalCalories = Double.parseDouble(caloriesInput.getText());
+            double totalProtein = Double.parseDouble(proteinInput.getText());
+            double totalCarbs = Double.parseDouble(carbsInput.getText());
+            double totalFat = Double.parseDouble(fatInput.getText());
+
+            Recipie newRecipe = new Recipie(name, totalCalories, totalProtein, totalCarbs, totalFat);
+            try {
+                BufferedWriter writer = new BufferedWriter(
+                        new FileWriter(
+                                ".\\src\\main\\java\\com\\example\\recipes\\recipes.csv",
+                                true));
+                writer.write(newRecipe.toCSV());
+                writer.newLine();
+                writer.close();
+            } catch (IOException e1) {
+                // It made me make this catch block
+                e1.printStackTrace();
+            }
+            showCreateRecipe(primaryStage);
+        });
+
+        // Arrange components in a layout
+        VBox root = new VBox();
+        VBox titleLayout = new VBox(10, titleLabel);
+        titleLayout.setAlignment(Pos.CENTER);
+        VBox entriesLayout = new VBox(10, recipieNameLabel, recipeNameInput, caloriesLabel, caloriesInput,
+                proteinLabel, proteinInput, carbsLabel, carbsInput, fatLabel, fatInput, saveRecipeButton, backButton);
+        entriesLayout.setAlignment(Pos.CENTER_LEFT);
+        root.getChildren().addAll(titleLayout, entriesLayout);
+
+        // Set up the scene and switch to it
+        Scene createRecipeScene = new Scene(root, 400, 400);
+        primaryStage.setScene(createRecipeScene);
     }
 
     // Creates the menu for adding food or recipes
@@ -118,7 +195,7 @@ public class AppUI extends Application {
     private void showFoodList(Stage primaryStage) {
         // Create a label for the title
         Label titleLabel = new Label("Available Foods");
-        titleLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white; -fx-padding: 10;");
+        titleLabel.setStyle("-fx-font-size: 20px;");
 
         // Create a VBox to display the list of food items
         VBox foodListLayout = new VBox(10, titleLabel);
