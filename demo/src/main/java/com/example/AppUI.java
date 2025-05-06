@@ -1,6 +1,5 @@
 package com.example;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import javafx.application.Application;
@@ -11,6 +10,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 
 public class AppUI extends Application {
 
@@ -50,6 +51,7 @@ public class AppUI extends Application {
         primaryStage.show();
     }
 
+    // Sets up the main menu UI
     private BorderPane setupUI(Stage primaryStage) {
         // Create a label for the title
         Label titleLabel = new Label("Calorie Tracker");
@@ -83,6 +85,7 @@ public class AppUI extends Application {
         return rootLayout;
     }
 
+    // Creates the menu for adding food or recipes
     private void showAddFoodOptions(Stage primaryStage) {
         // Create buttons for the options
         Button addRecipeButton = new Button("Add Recipe");
@@ -111,6 +114,7 @@ public class AppUI extends Application {
 
     }
 
+    // Displays the list of food items after "Add Food" is clicked
     private void showFoodList(Stage primaryStage) {
         // Create a label for the title
         Label titleLabel = new Label("Available Foods");
@@ -119,23 +123,47 @@ public class AppUI extends Application {
         // Create a VBox to display the list of food items
         VBox foodListLayout = new VBox(10, titleLabel);
         foodListLayout.setAlignment(Pos.CENTER);
-        foodListLayout.setStyle("-fx-padding: 20; -fx-background-color: black;");
 
         // Add each food item as a button
         for (FoodItem food : FOOD_CONSTANTS) {
             Button foodButton = new Button(food.getName());
-            foodButton.setStyle("-fx-text-fill: white; -fx-background-color: #444;");
             foodButton.setOnAction(e -> {
+
+                Stage popupStage = new Stage();
+                popupStage.setTitle("Add Food");
+
                 FoodItem selectedFood = food;
-                addFoodToTracker(selectedFood);
-                System.out.println(food.getName() + " added to tracker.");
+                TextField userGramEntry = new TextField("Enter food amount in grams");
+
+                Button addButton = new Button("Add Food");
+
+                addButton.setOnAction(event -> {
+                    double grams = Double.parseDouble(userGramEntry.getText());
+
+                    double caloriesToAdd = (selectedFood.getCalories() / 100) * grams;
+                    double proteinToAdd = (selectedFood.getProtein() / 100) * grams;
+                    double carbsToAdd = (selectedFood.getCarbs() / 100) * grams;
+                    double fatToAdd = (selectedFood.getFat() / 100) * grams;
+
+                    FoodItem foodToAdd = new FoodItem(food.getName(), caloriesToAdd, proteinToAdd, carbsToAdd,
+                            fatToAdd);
+                    addFoodToTracker(foodToAdd);
+                    popupStage.close();
+                });
+
+                VBox popupLayout = new VBox(10, userGramEntry, addButton);
+                popupLayout.setAlignment(Pos.CENTER);
+
+                Scene popupScene = new Scene(popupLayout, 300, 200);
+                popupStage.setScene(popupScene);
+                popupStage.show();
+
             });
             foodListLayout.getChildren().add(foodButton);
         }
 
         // Add a back button to return to the previous menu
         Button backButton = new Button("Back");
-        backButton.setStyle("-fx-text-fill: white; -fx-background-color: #444;");
         backButton.setOnAction(e -> showAddFoodOptions(primaryStage));
         foodListLayout.getChildren().add(backButton);
 
@@ -144,6 +172,8 @@ public class AppUI extends Application {
         primaryStage.setScene(foodListScene);
     }
 
+    // This is used to add food items to the calorie tracker
+    // It updates the calorie and macro values based on the selected food item
     private void addFoodToTracker(FoodItem food) {
         if (food != null) {
             calories -= food.getCalories();
@@ -156,6 +186,7 @@ public class AppUI extends Application {
         }
     }
 
+    // Displays the calorie and macro information
     private void showCalorieView(Stage primaryStage) {
         // Create labels to display calorie and macro information
         Label calorieLabel = new Label("Remaining Calories: " + getCalories());
