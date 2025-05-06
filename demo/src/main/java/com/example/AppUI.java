@@ -101,16 +101,14 @@ public class AppUI extends Application {
         Button viewCaloriesButton = new Button("View Remaining Calories/Macros");
         Button addFoodButton = new Button("Add Food/Recipes to Total Calories");
         Button createRecipeButton = new Button("Create Recipes");
-        Button viewRecipesButton = new Button("View Recipes");
 
         // Set up button actions (to be implemented later)
         viewCaloriesButton.setOnAction(e -> showCalorieView(primaryStage));
         addFoodButton.setOnAction(e -> showAddFoodOptions(primaryStage));
         createRecipeButton.setOnAction(e -> showCreateRecipe(primaryStage));
-        viewRecipesButton.setOnAction(e -> System.out.println("View Recipes clicked"));
 
         // Arrange buttons in a vertical layout
-        VBox menuLayout = new VBox(10, viewCaloriesButton, addFoodButton, createRecipeButton, viewRecipesButton);
+        VBox menuLayout = new VBox(10, viewCaloriesButton, addFoodButton, createRecipeButton);
         menuLayout.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
         BorderPane rootLayout = new BorderPane();
@@ -276,7 +274,7 @@ public class AppUI extends Application {
         for (Recipe recipe : recipes) {
             Button recipeButton = new Button(recipe.getName());
             recipeButton.setOnAction(e -> {
-                System.out.println(recipe.getName() + " selected.");
+                addFoodToTracker(recipe);
             });
             recipeListLayout.getChildren().add(recipeButton);
         }
@@ -373,6 +371,19 @@ public class AppUI extends Application {
             System.out.println(food.getName() + " added: " + food);
         } else {
             System.out.println("Food not found.");
+        }
+    }
+
+    // Method overload to add a recipe to the tracker
+    private void addFoodToTracker(Recipe recipe) {
+        if (recipe != null) {
+            calories -= recipe.getTotalCalories();
+            protein -= recipe.getTotalProtein();
+            carbs -= recipe.getTotalCarbs();
+            fat -= recipe.getTotalFat();
+            System.out.println(recipe.getName() + " added: " + recipe);
+        } else {
+            System.out.println("Recipe not found.");
         }
     }
 
