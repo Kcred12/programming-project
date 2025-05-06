@@ -1,6 +1,10 @@
 package com.example;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +18,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 
 public class AppUI extends Application {
 
@@ -34,8 +37,37 @@ public class AppUI extends Application {
 
     ArrayList<FoodItem> FOOD_CONSTANTS = new ArrayList<FoodItem>();
 
+    ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+
     @Override
     public void start(Stage primaryStage) {
+
+        // Create the recipe CSV in case it doesn't exist already
+        String filePath = ".\\src\\main\\java\\com\\example\\recipes\\recipes.csv";
+        File file = new File(filePath);
+
+        try {
+            if (!file.exists()) {
+                // Create the file and write the header row
+                file.getParentFile().mkdirs(); // Ensure the directory exists
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                    writer.write("Name,Calories,Protein,Carbs,Fat");
+                    writer.newLine();
+                    System.out.println("Created recipes.csv with header row.");
+                }
+            } else {
+                System.out.println("recipes.csv already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error creating recipes.csv: " + e.getMessage());
+        }
+
+        // Load recipes from the CSV file
+        loadRecipesFromCSV(filePath);
+
+        for (Recipe recipe : recipes) {
+            System.out.println(recipe);
+        }
 
         // Initialize the food constants
         FOOD_CONSTANTS.add(chickenBreast);
@@ -54,8 +86,9 @@ public class AppUI extends Application {
         primaryStage.show();
     }
 
-    // Sets up the main menu UI
+    // Sets up the main menu UI and loads the recipes from the CSV file
     private BorderPane setupUI(Stage primaryStage) {
+
         // Create a label for the title
         Label titleLabel = new Label("Calorie Tracker");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10;");
@@ -88,6 +121,32 @@ public class AppUI extends Application {
         return rootLayout;
     }
 
+    // Method to load recipes from a CSV file
+    private void loadRecipesFromCSV(String filePath) {
+        try (BufferedReader reader = new BufferedReader(
+                new FileReader(filePath))) {
+            // Read the header line (if needed)
+            String line = reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5) {
+                    String name = parts[0];
+                    double totalCalories = Double.parseDouble(parts[1]);
+                    double totalProtein = Double.parseDouble(parts[2]);
+                    double totalCarbs = Double.parseDouble(parts[3]);
+                    double totalFat = Double.parseDouble(parts[4]);
+
+                    Recipe recipe = new Recipe(name, totalCalories, totalProtein, totalCarbs, totalFat);
+                    recipes.add(recipe);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Displays the create recipe UI
     private void showCreateRecipe(Stage primaryStage) {
         // Create UI components
@@ -113,7 +172,7 @@ public class AppUI extends Application {
             double totalCarbs = Double.parseDouble(carbsInput.getText());
             double totalFat = Double.parseDouble(fatInput.getText());
 
-            Recipie newRecipe = new Recipie(name, totalCalories, totalProtein, totalCarbs, totalFat);
+            Recipe newRecipe = new Recipe(name, totalCalories, totalProtein, totalCarbs, totalFat);
             System.out.println("Recipe saved: " + newRecipe);
         });
 
@@ -132,7 +191,7 @@ public class AppUI extends Application {
             double totalCarbs = Double.parseDouble(carbsInput.getText());
             double totalFat = Double.parseDouble(fatInput.getText());
 
-            Recipie newRecipe = new Recipie(name, totalCalories, totalProtein, totalCarbs, totalFat);
+            Recipe newRecipe = new Recipe(name, totalCalories, totalProtein, totalCarbs, totalFat);
             try {
                 BufferedWriter writer = new BufferedWriter(
                         new FileWriter(

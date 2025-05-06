@@ -1,13 +1,13 @@
 package com.example;
 
-public class Recipie {
+public class Recipe {
     private String name;
     private double totalCalories;
     private double totalProtein;
     private double totalCarbs;
     private double totalFat;
 
-    public Recipie(String name, double totalCalories, double totalProtein, double totalCarbs, double totalFat) {
+    public Recipe(String name, double totalCalories, double totalProtein, double totalCarbs, double totalFat) {
         this.name = name;
         this.totalCalories = totalCalories;
         this.totalProtein = totalProtein;
@@ -68,7 +68,6 @@ public class Recipie {
         result += "Total Protein: " + totalProtein + "g\n";
         result += "Total Carbs: " + totalCarbs + "g\n";
         result += "Total Fat: " + totalFat + "g\n";
-        result += "Ingredients:\n";
         return result;
     }
 }
