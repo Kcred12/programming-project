@@ -35,6 +35,8 @@ public class AppUI extends Application {
     private final FoodItem whiteRice = new FoodItem("White Rice", 130, 2.7, 28, 0);
     private final FoodItem eightyTwentyGroundBeef = new FoodItem("80/20 Ground Beef", 270, 26, 0, 18);
 
+    String filePath = ".\\src\\main\\java\\com\\example\\recipes\\recipes.csv";
+
     ArrayList<FoodItem> FOOD_CONSTANTS = new ArrayList<FoodItem>();
 
     ArrayList<Recipe> recipes = new ArrayList<Recipe>();
@@ -42,8 +44,6 @@ public class AppUI extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        // Create the recipe CSV in case it doesn't exist already
-        String filePath = ".\\src\\main\\java\\com\\example\\recipes\\recipes.csv";
         File file = new File(filePath);
 
         try {
@@ -53,10 +53,10 @@ public class AppUI extends Application {
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                     writer.write("Name,Calories,Protein,Carbs,Fat");
                     writer.newLine();
-                    System.out.println("Created recipes.csv with header row.");
+                    System.out.println("Created recipes.csv with header row.\n");
                 }
             } else {
-                System.out.println("recipes.csv already exists.");
+                System.out.println("recipes.csv already exists.\n");
             }
         } catch (IOException e) {
             System.out.println("Error creating recipes.csv: " + e.getMessage());
@@ -79,7 +79,7 @@ public class AppUI extends Application {
         BorderPane rootLayout = setupUI(primaryStage);
 
         // Set up the scene and stage
-        Scene scene = new Scene(rootLayout, 400, 300);
+        Scene scene = new Scene(rootLayout, 800, 600);
         primaryStage.setResizable(false); // Disable resizing
         primaryStage.setTitle("Calorie Tracker");
         primaryStage.setScene(scene);
@@ -123,6 +123,8 @@ public class AppUI extends Application {
 
     // Method to load recipes from a CSV file
     private void loadRecipesFromCSV(String filePath) {
+
+        recipes.clear(); // Clear the existing recipes list to avoid duplicates
         try (BufferedReader reader = new BufferedReader(
                 new FileReader(filePath))) {
             // Read the header line (if needed)
@@ -179,7 +181,7 @@ public class AppUI extends Application {
         // Back button to return to the main menu
         backButton.setOnAction(e -> {
             BorderPane rootLayout = setupUI(primaryStage);
-            Scene scene = new Scene(rootLayout, 400, 300);
+            Scene scene = new Scene(rootLayout, 800, 600);
             primaryStage.setScene(scene);
         });
 
@@ -217,7 +219,7 @@ public class AppUI extends Application {
         root.getChildren().addAll(titleLayout, entriesLayout);
 
         // Set up the scene and switch to it
-        Scene createRecipeScene = new Scene(root, 400, 400);
+        Scene createRecipeScene = new Scene(root, 800, 600);
         primaryStage.setScene(createRecipeScene);
     }
 
@@ -231,12 +233,12 @@ public class AppUI extends Application {
         Button backButton = new Button("Back");
 
         // Set up actions for the buttons
-        addRecipeButton.setOnAction(e -> System.out.println("Add Recipe functionality to be implemented."));
+        addRecipeButton.setOnAction(e -> showRecipeList(primaryStage));
         addFoodButton.setOnAction(e -> showFoodList(primaryStage));
 
         backButton.setOnAction(e -> {
             BorderPane rootLayout = setupUI(primaryStage);
-            Scene scene = new Scene(rootLayout, 400, 300);
+            Scene scene = new Scene(rootLayout, 800, 600);
             primaryStage.setScene(scene);
         });
 
@@ -245,9 +247,61 @@ public class AppUI extends Application {
         optionsLayout.setAlignment(Pos.CENTER);
 
         // Set up the scene and switch to it
-        Scene optionsScene = new Scene(optionsLayout, 400, 300);
+        Scene optionsScene = new Scene(optionsLayout, 800, 600);
         primaryStage.setScene(optionsScene);
 
+    }
+
+    private void showRecipeList(Stage primaryStage) {
+        // Create a label for the title
+        Label titleLabel = new Label("Available Recipes");
+        titleLabel.setStyle("-fx-font-size: 20px;");
+
+        // Create a root container for better organization
+        VBox root = new VBox(10);
+
+        // Create a VBox to display the title label
+        VBox titleLabelLayout = new VBox(10, titleLabel);
+        titleLabelLayout.setAlignment(Pos.CENTER);
+
+        // Create a VBox to display the list of recipes
+        VBox recipeListLayout = new VBox(10);
+        recipeListLayout.setAlignment(Pos.CENTER_LEFT);
+
+        // Create a VBox for the button at the bottom so it does not clear the buttons
+        VBox buttonLayout = new VBox(10);
+        buttonLayout.setAlignment(Pos.CENTER_LEFT);
+
+        // Add each food item as a button
+        for (Recipe recipe : recipes) {
+            Button recipeButton = new Button(recipe.getName());
+            recipeButton.setOnAction(e -> {
+                System.out.println(recipe.getName() + " selected.");
+            });
+            recipeListLayout.getChildren().add(recipeButton);
+        }
+
+        // Add a back button to return to the previous menu
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> showAddFoodOptions(primaryStage));
+
+        // Add a button to refresh the recipe list if recipes have been added
+        Button refreshButton = new Button("Refresh Recipe List");
+        refreshButton.setOnAction(e -> {
+            // Reload the recipes from the CSV file
+            loadRecipesFromCSV(filePath);
+            recipeListLayout.getChildren().clear(); // Clear the current list
+            showRecipeList(primaryStage);
+        });
+
+        buttonLayout.getChildren().add(refreshButton);
+        buttonLayout.getChildren().add(backButton);
+
+        root.getChildren().addAll(titleLabelLayout, recipeListLayout, buttonLayout);
+
+        // Set up the scene and switch to it
+        Scene recipeListScene = new Scene(root, 800, 600);
+        primaryStage.setScene(recipeListScene);
     }
 
     // Displays the list of food items after "Add Food" is clicked
@@ -304,7 +358,7 @@ public class AppUI extends Application {
         foodListLayout.getChildren().add(backButton);
 
         // Set up the scene and switch to it
-        Scene foodListScene = new Scene(foodListLayout, 400, 300);
+        Scene foodListScene = new Scene(foodListLayout, 800, 600);
         primaryStage.setScene(foodListScene);
     }
 
@@ -340,7 +394,7 @@ public class AppUI extends Application {
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             BorderPane rootLayout = setupUI(primaryStage);
-            Scene scene = new Scene(rootLayout, 400, 300);
+            Scene scene = new Scene(rootLayout, 800, 600);
             primaryStage.setScene(scene);
         });
 
@@ -350,7 +404,7 @@ public class AppUI extends Application {
         calorieLayout.setStyle("-fx-padding: 20;");
 
         // Set up the scene and switch to it
-        Scene calorieScene = new Scene(calorieLayout, 400, 300);
+        Scene calorieScene = new Scene(calorieLayout, 800, 600);
         primaryStage.setScene(calorieScene);
     }
 

@@ -1,4 +1,3 @@
 com\example\AppUI.class
-com\example\FileIO.class
-com\example\Recipe.class
 com\example\FoodItem.class
+com\example\Recipe.class
